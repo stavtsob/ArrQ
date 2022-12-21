@@ -1,0 +1,29 @@
+name: Static code analysis and testing
+
+on:
+  push:
+    branches: ['**']
+  
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install dependencies
+        uses: php-actions/composer@v6
+        with:
+          php_version: 8.1
+
+      - name: Static code analysis
+        uses: php-actions/phpstan@v3
+        with:
+          configuration: phpstan.neon
+          memory_limit: 512M
+          php_version: 8.1
+
+      - name: Run tests
+        run: ./vendor/bin/pest
