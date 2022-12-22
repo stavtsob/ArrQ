@@ -10,12 +10,12 @@ class ArrQ
     /**
      * @var array<int, array<int|string, mixed>>|array<int, object> $queryArray
      */
-    private array $queryArray;
+    private $queryArray;
 
     /**
      * @var bool $containsObjects
      */
-    private bool $containsObjects;
+    private $containsObjects;
 
     /**
      * ArrQ constructor.
@@ -51,7 +51,7 @@ class ArrQ
     /**
      * @return bool
      */
-    private function containsObjects(): bool
+    private function containsObjects()
     {
         return $this->containsObjects;
     }
@@ -81,7 +81,7 @@ class ArrQ
             /**
              * @var array<int, object> $sortedArray
              */
-            if($sortedArray[0]->$key ?? false)
+            if(!($sortedArray[0]->$key ?? false))
                 throw new \InvalidArgumentException("Given key was not found as object property.");
             $sortedArray = SortingUtil::sortArrayOfObjects($sortedArray, $key, $order);
         }

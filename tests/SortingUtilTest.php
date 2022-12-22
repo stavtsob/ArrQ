@@ -54,7 +54,7 @@ class TestPerson {
     /**
      * @var int $age
      */
-    public int $age;
+    public $age;
 
     /**
      * @param string $name
