@@ -1,10 +1,18 @@
 <?php
+
 namespace ArrQ;
 
 class SortedArrQ extends ArrQ
 {
+    /**
+     * @var string|int
+     */
     private $sortingKey;
 
+    /**
+     * @param array<int, array<int|string, mixed>>|array<int, object> $queryObject
+     * @param string $sortingKey
+     */
     public function __construct($queryObject, $sortingKey)
     {
         parent::__construct($queryObject);
@@ -14,7 +22,7 @@ class SortedArrQ extends ArrQ
     }
 
     /**
-     * @return mixed
+     * @return string|int
      */
     public function getSortingKey()
     {
@@ -22,7 +30,7 @@ class SortedArrQ extends ArrQ
     }
 
     /**
-     * @param mixed $sortingKey
+     * @param string|int $sortingKey
      */
     public function setSortingKey($sortingKey): void
     {

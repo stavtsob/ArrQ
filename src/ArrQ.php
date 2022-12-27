@@ -1,4 +1,5 @@
 <?php
+
 namespace ArrQ;
 
 use ArrQ\Utils\ComparisonUtil;
@@ -6,12 +7,20 @@ use ArrQ\Utils\SortingUtil;
 
 class ArrQ
 {
-    private array $queryArray;
-    private bool $containsObjects;
+    /**
+     * @var array<int, array<int|string, mixed>>|array<int, object> $queryArray
+     */
+    private $queryArray;
+
+    /**
+     * @var bool $containsObjects
+     */
+    private $containsObjects;
 
     /**
      * ArrQ constructor.
-     * @param $queryObject
+     * @param array<int, array<int|string, mixed>>|array<int, object> $queryObject
+     * @throws \InvalidArgumentException
      */
     public function __construct($queryObject)
     {
@@ -24,7 +33,7 @@ class ArrQ
     }
 
     /**
-     * @return array
+     * @return array<int, array<int|string, mixed>>|array<int, object>
      */
     public function getQueryArray(): array
     {
@@ -32,7 +41,7 @@ class ArrQ
     }
 
     /**
-     * @param array $queryArray
+     * @param array<int, array<int|string, mixed>>|array<int, object> $queryArray
      */
     private function setQueryArray(array $queryArray): void
     {
@@ -42,7 +51,7 @@ class ArrQ
     /**
      * @return bool
      */
-    private function containsObjects(): bool
+    private function containsObjects()
     {
         return $this->containsObjects;
     }
@@ -55,7 +64,13 @@ class ArrQ
         $this->containsObjects = $containsObjects;
     }
 
-    public function sortByKey($key,$order='ASC')
+    /**
+     * @param string $key
+     * @param string $order
+     * @return void
+     * @throws \InvalidArgumentException
+     */
+    public function sortByKey($key, $order = 'ASC'): void
     {
         $sortedArray = $this->getQueryArray();
         if(empty($sortedArray))
@@ -63,29 +78,44 @@ class ArrQ
 
         if($this->containsObjects())
         {
-            if($sortedArray[0]->$key ?? false)
+            /**
+             * @var array<int, object> $sortedArray
+             */
+            if(!($sortedArray[0]->$key ?? false))
                 throw new \InvalidArgumentException("Given key was not found as object property.");
-            $sortedArray = SortingUtil::sortArrayOfObjects($sortedArray,$key,$order);
+            $sortedArray = SortingUtil::sortArrayOfObjects($sortedArray, $key, $order);
         }
         else
         {
+            /**
+             * @var array<int, array<int|string, mixed>> $sortedArray
+             */
             if(!isset($sortedArray[0][$key]))
                 throw new \InvalidArgumentException("Given key was not found as array key.");
-            $sortedArray = SortingUtil::sortArrayOfItems($sortedArray,$key,$order);
+            $sortedArray = SortingUtil::sortArrayOfItems($sortedArray, $key, $order);
         }
 
         $this->setQueryArray($sortedArray);
     }
 
-    public function where($key,$value,$operator='=')
+    /**
+     * @param string|int $key
+     * @param string|int $value
+     * @param string $operator
+     * @return ArrQ
+     */
+    public function where($key, $value, $operator = '=')
     {
         $queryArray = $this->getQueryArray();
         $resultArray = [];
         if($this->containsObjects())
         {
+            /**
+             * @var array<int, object> $queryArray
+             */
             foreach ($queryArray as $item)
             {
-                if(ComparisonUtil::compareByOperator($item->$key,$value,$operator))
+                if(ComparisonUtil::compareByOperator($item->$key, $value, $operator))
                 {
                     $resultArray[] = $item;
                 }
@@ -93,9 +123,12 @@ class ArrQ
         }
         else
         {
+            /**
+             * @var array<int, array<int|string, mixed>> $queryArray
+             */
             foreach ($queryArray as $item)
             {
-                if(ComparisonUtil::compareByOperator($item[$key],$value,$operator))
+                if(ComparisonUtil::compareByOperator($item[$key], $value, $operator))
                 {
                     $resultArray[] = $item;
                 }
@@ -105,18 +138,26 @@ class ArrQ
         return new ArrQ($resultArray);
     }
 
+    /**
+     * @return array<int, array<int|string, mixed>>|array<int, object>
+     */
     public function distinct()
     {
         $queryArray = $this->getQueryArray();
+
+        /**
+         * @var array<int, int>|array<int, string>
+         */
         $duplicatedIndexes = [];
+
         if($this->containsObjects())
         {
-            for($i=0;$i<sizeof($queryArray);$i++)
+            for($i = 0; $i < sizeof($queryArray); $i++)
             {
-                for($j=$i+1;$j<sizeof($queryArray);$j++)
+                for($j = $i + 1; $j < sizeof($queryArray); $j++)
                 {
                     if($queryArray[$i] == $queryArray[$j])
-                        $duplicatedIndexes = $j;
+                        $duplicatedIndexes[] = $j;
                 }
             }
         }

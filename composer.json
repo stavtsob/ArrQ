@@ -1,0 +1,32 @@
+{
+    "name": "stavtsob/arrq",
+    "description": "A PHP library for quickly searching inside arrays of objects or items.",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Stavros Tsompanidis",
+            "email": "stavtsob@gmail.com"
+        }
+    ],
+    "require-dev": {
+        "phpstan/phpstan": "^1.9",
+        "pestphp/pest": "^1.22"
+    },
+    "scripts": {
+        "phpstan": [
+            "./vendor/bin/phpstan analyse --memory-limit=256M"
+        ],
+        "pest": [
+            "./vendor/bin/pest"
+        ]
+    },
+    "config": {
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        }
+    },
+    "autoload": {
+        "psr-4": {"ArrQ\\": "src/"}
+    }
+}
